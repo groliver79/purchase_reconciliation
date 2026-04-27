@@ -1,0 +1,36 @@
+# ========================
+# Visual Studio / C# Plugin
+# ========================
+bin/
+obj/
+.vs/
+*.user*
+.suo*
+.userosscache*
+.sln
+.docstates*
+.nupkg*.snupkg
+[Pp]ackages/
+*.DotSettings.user
+
+# Don't commit built DLLs*
+.dll*
+.pdb
+
+# ========================
+# VS Code / JavaScript
+# ========================
+node_modules/
+.vscode/
+*.log
+
+# ========================
+# Dataverse / Power Platform
+# ========================
+# Don't commit exported solution zips*.zip# Unless you intentionally want to store them — then remove this line
+
+# ========================
+# General
+# ========================
+.DS_Store
+Thumbs.db

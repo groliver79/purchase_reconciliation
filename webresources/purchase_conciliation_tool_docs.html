@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purchase Reconciliation Tool – Documentation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+    :root {
+      --navy:    #0d1f3c;
+      --teal:    #006e7f;
+      --teal-lt: #e0f4f7;
+      --gold:    #b8860b;
+      --gold-lt: #fdf5dc;
+      --text:    #1a2535;
+      --muted:   #5a6a80;
+      --border:  #c8d4e0;
+      --bg:      #f4f7fa;
+      --white:   #ffffff;
+      --mono:    'IBM Plex Mono', monospace;
+      --sans:    'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    nav {
+      width: 240px;
+      min-width: 240px;
+      background: var(--navy);
+      color: #c8d8ea;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .nav-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7ec8d3;
+      margin-bottom: 4px;
+    }
+
+    .nav-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e8f2ff;
+      line-height: 1.3;
+    }
+
+    .nav-version {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #4a6880;
+      margin-top: 6px;
+    }
+
+    nav ul { list-style: none; padding: 12px 0; }
+
+    nav ul li a {
+      display: block;
+      padding: 7px 20px;
+      color: #8aaec8;
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: #e0f4f7;
+      background: rgba(0,110,127,0.25);
+      border-left-color: #006e7f;
+    }
+
+    .nav-section-label {
+      padding: 16px 20px 4px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #3a5570;
+      font-weight: 600;
+    }
+
+    /* ── MAIN ── */
+    main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 860px;
+    }
+
+    /* ── HEADER BANNER ── */
+    .doc-hero {
+      background: var(--navy);
+      color: white;
+      border-radius: 8px;
+      padding: 32px 36px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-hero::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(0,110,127,0.25);
+    }
+
+    .doc-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -50px; right: 60px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(184,134,11,0.15);
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #7ec8d3;
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .hero-sub {
+      color: #8aaec8;
+      font-size: 13px;
+    }
+
+    .hero-meta {
+      margin-top: 20px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #4a6880;
+    }
+
+    .hero-meta strong {
+      color: #c8d8ea;
+      font-weight: 500;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      margin-bottom: 48px;
+      scroll-margin-top: 24px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .section-icon {
+      width: 28px; height: 28px;
+      background: var(--teal);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--teal);
+      margin: 24px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+    }
+
+    p { margin-bottom: 12px; color: var(--text); }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      border-left: 4px solid;
+      font-size: 13px;
+    }
+
+    .callout.info    { background: var(--teal-lt); border-color: var(--teal); color: #004a57; }
+    .callout.warning { background: var(--gold-lt); border-color: var(--gold); color: #6b4e00; }
+    .callout.note    { background: #f0f0f8; border-color: #7b7bc8; color: #3a3a7a; }
+
+    .callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ── CODE BLOCKS ── */
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #e8eef5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #0d3a5c;
+    }
+
+    pre {
+      background: #0d1f3c;
+      color: #c8e6f0;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 18px 20px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    pre .comment { color: #4a6880; }
+    pre .keyword { color: #7ec8d3; }
+    pre .string  { color: #b8d48e; }
+    pre .value   { color: #f0c070; }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin: 12px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr { background: var(--navy); color: white; }
+    thead th { padding: 10px 14px; text-align: left; font-weight: 500; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: var(--teal-lt); }
+    tbody td { padding: 9px 14px; vertical-align: top; }
+
+    td code { background: transparent; padding: 0; color: var(--teal); }
+
+    /* ── STEP LIST ── */
+    ol.steps { padding-left: 0; list-style: none; counter-reset: steps; }
+
+    ol.steps li {
+      counter-increment: steps;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+
+    ol.steps li::before {
+      content: counter(steps);
+      min-width: 26px; height: 26px;
+      background: var(--teal);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+
+    .badge.plugin  { background: #dce8ff; color: #1a3a8a; }
+    .badge.js      { background: #fff4dc; color: #7a5a00; }
+    .badge.config  { background: #e8f5e8; color: #1a5a1a; }
+    .badge.entity  { background: #f0e8ff; color: #5a1a7a; }
+
+    /* ── CHANGE LOG ── */
+    .changelog-entry {
+      display: flex;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .changelog-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 90px;
+    }
+
+    .changelog-desc { font-size: 13px; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR NAV ── -->
+<nav>
+  <div class="nav-header">
+    <div class="nav-logo">Purchase Reconciliation Tool</div>
+    <div class="nav-title">App Documentation</div>
+    <div class="nav-version">v1.0 · ProcurementPlugins</div>
+  </div>
+  <ul>
+    <li class="nav-section-label">Overview</li>
+    <li><a href="#overview">About This App</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+
+    <li class="nav-section-label">Data</li>
+    <li><a href="#entities">Entities &amp; Fields</a></li>
+
+    <li class="nav-section-label">Customisations</li>
+    <li><a href="#plugins">C# Plugins</a></li>
+  
+    <li class="nav-section-label">Operations</li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#known-issues">Known Issues</a></li>
+    <li><a href="#changelog">Change Log</a></li>
+  </ul>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<main>
+
+  <!-- HERO -->
+  <div class="doc-hero">
+    <div class="hero-label">Internal Technical Documentation</div>
+    <div class="hero-title">Purchase Reconciliation Tool</div>
+    <div class="hero-sub">Model-Driven Power App · Microsoft Dataverse · AJV-C Procurement </div>
+    <div class="hero-meta">
+      <span><strong>Solution:</strong> ProcurementSolution</span>
+      <span><strong>Publisher Prefix:</strong> biteam_</span>
+      <span><strong>Plugin Namespace:</strong> ProcurementPlugins</span>
+      <span><strong>Environment:</strong> Production</span>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <h2><span class="section-icon">📋</span> About This App</h2>
+    <p>
+      The Purchase Reconciliation Tool is a Microsoft Power Apps Model-Driven application built on
+      Dataverse, designed to manage AJV-C purchase requests. It enforces business
+      rules through C# server-side plugins and provides guided user input through internal LCNC business.
+    </p>
+    <div class="callout info">
+      <strong>Audience</strong>
+      This document is intended for developers and system administrators responsible for maintaining,
+      extending, or deploying this solution. End-user guidance is covered in the separate User Guide.
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <h2><span class="section-icon">🏗</span> Architecture</h2>
+    <p>
+      The solution follows a standard Power Platform layered pattern: Dataverse provides the data
+      platform, server-side plugins enforce data integrity, and business rules handle
+      client-side UX logic on UCI model-driven forms.
+    </p>
+    <pre><span class="comment">// High-level component map</span>
+Dataverse
+  └─ biteam_purchaserequest  <span class="comment">(primary entity)</span>
+       ├─ Plugin: ProcurementPlugins.dll
+       │    └─ AddTpcPrefixPlugin <span class="comment">(Pre-Create / Pre-Update)</span>
+  └─ cr6c5_pca  <span class="comment">(primary entity)</span>
+        ├─ Plugin: ProcurementPlugins.dll
+        │    └─ CreatePcaRecordPlugin <span class="comment">(Pre-Create / Pre-Update)</span></pre>  
+      
+  </section>
+
+  <!-- ENTITIES -->
+  <section id="entities">
+    <h2><span class="section-icon">🗄</span> Entities &amp; Fields</h2>
+
+    <h3>biteam_purchaserequest</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Display Name</th>
+            <th>Schema Name</th>
+            <th>Type</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Name</td>
+            <td><code>biteam_name</code></td>
+            <td>Text (max 13)</td>
+            <td>User enters <code>YY-XXXXXX</code>; plugin prepends <code>TPC-</code></td>
+          </tr>
+          <tr>
+            <td><!-- add your fields below --></td>
+            <td><code></code></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <strong>Column Length</strong>
+      <code>biteam_name</code> max length was capped to <strong>13 characters</strong> to accommodate
+      the server-side <code>TPC-</code> prefix. Do not revert this to the default 100 without reviewing
+      plugin logic.
+    </div>
+
+    <h3>cr6c5_pca</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Display Name</th>
+            <th>Schema Name</th>
+            <th>Type</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PCA Number</td>
+            <td><code>cr6c5_pcanumber</code></td>
+            <td>Text (max 13)</td>
+            <td>System via another plugin automatically creates a unique PCA number when a TPC record is created</td>
+          </tr>
+          <tr>
+            <td><!-- add your fields below --></td>
+            <td><code></code></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PLUGINS -->
+  <section id="plugins">
+    <h2><span class="section-icon">⚙️</span> C# Plugins</h2>
+
+    <h3>AddTpcPrefixPlugin</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge entity">biteam_purchaserequest</span>
+      Automatically prepends <code>TPC-</code> to the <code>biteam_name</code> field on Create and Update,
+      preventing duplicate prefixes if the record is updated after creation.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Assembly</td><td><code>ProcurementPlugins.dll</code></td></tr>
+          <tr><td>Namespace</td><td><code>ProcurementPlugins</code></td></tr>
+          <tr><td>Class</td><td><code>AddTpcPrefixPlugin</code></td></tr>
+          <tr><td>Stage</td><td>Pre-Operation (20)</td></tr>
+          <tr><td>Message</td><td>Create, Update</td></tr>
+          <tr><td>Entity</td><td><code>biteam_purchaserequest</code></td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>CreatePcaRecordPlugin.cs</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge entity">biteam_purchaserequest</span>
+      Automatically creates a linked cr6c5_PCA record whenever a new biteam_purchaserequest record is created. 
+      Derives the PCA number by replacing <code>TPC-</code> with <code>PCA-</code> to the <code>cr6c5_pcanumber</code> field on Create,
+      preventing duplicate prefixes if a record is already present.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Assembly</td><td><code>ProcurementPlugins.dll</code></td></tr>
+          <tr><td>Namespace</td><td><code>ProcurementPlugins</code></td></tr>
+          <tr><td>Class</td><td><code>CreatePcaRecordPlugin</code></td></tr>
+          <tr><td>Stage</td><td>Post-Operation (40)</td></tr>
+          <tr><td>Message</td><td>Create</td></tr>
+          <tr><td>Entity</td><td><code>biteam_purchaserequest</code></td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout note">
+      <strong>Adding More Plugins</strong>
+      A subsequent plugin class can be added to the same DLL without reregistering the assembly — only
+      a new Step registration is needed. If a fourth plugin is added, consider refactoring
+      to a single configurable plugin using the <strong>Unsecure Configuration</strong> field in the
+      Plugin Registration Tool.
+    </div>
+
+    <h3>Deployment Steps</h3>
+    <ol class="steps">
+      <li>Build the solution in Visual Studio (Release mode).</li>
+      <li>Open the Plugin Registration Tool and connect to the target environment.</li>
+      <li>Update the assembly (<em>Upload</em>) if already registered, or register new.</li>
+      <li>Register or verify Steps for Create and Update on <code>biteam_purchaserequest</code>.</li>
+      <li>Test by creating a new Purchase Request and confirming the <code>TPC-</code> prefix appears.</li>
+    </ol>
+  </section>
+
+ 
+  <!-- DEPLOYMENT -->
+  <section id="deployment">
+    <h2><span class="section-icon">🚀</span> Deployment</h2>
+    <p>All components are bundled in the managed solution. For environment promotion:</p>
+    <ol class="steps">
+      <li>Export the solution as <strong>Managed</strong> from the source environment.</li>
+      <li>Import into the target environment via the Power Platform admin centre or CLI.</li>
+      <li>Verify plugin assembly steps are active post-import.</li>
+      <li>Run an end-to-end test: create a Purchase Request and validate prefix and field formatting.</li>
+    </ol>
+  </section>
+
+  <!-- KNOWN ISSUES -->
+  <section id="known-issues">
+    <h2><span class="section-icon">⚠️</span> Known Issues</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Issue</th><th>Error / Symptom</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Lingering INFO notification on save</td>
+            <td>Error code <code>2200000007</code></td>
+            <td>Call <code>clearNotification()</code> at the start of <code>onSave()</code></td>
+          </tr>
+          <tr>
+            <td>Hint reappears after save</td>
+            <td>Format hint shown on saved records</td>
+            <td><code>setTimeout</code> guard in <code>onLoad</code> checks for existing value before setting hint</td>
+          </tr>
+          <tr>
+            <td><code>OnPostSave</code> not available</td>
+            <td>Event missing from form editor</td>
+            <td>Cleanup logic moved to <code>onLoad</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section id="changelog">
+    <h2><span class="section-icon">📝</span> Change Log</h2>
+
+    <div class="changelog-entry">
+      <div class="changelog-date">2025-Q1</div>
+      <div class="changelog-desc">
+        <strong>v1.0 — Initial Release</strong><br>
+        AutoPrefixPlugin (Pre-Create/Pre-Update) · tpc_PurchaseRequestForm.js onLoad/onSave ·
+        biteam_name max length increased to 50 · setTimeout notification guard added.
+      </div>
+    </div>
+    <div class="changelog-entry">
+      <div class="changelog-date">—</div>
+      <div class="changelog-desc"><em>Future entries go here.</em></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Purchase Reconciliation Tool · Internal Use Only</span>
+    <span>ProcurementPlugins · biteam_ publisher</span>
+  </footer>
+
+</main>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links    = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
