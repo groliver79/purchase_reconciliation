@@ -1,9 +1,11 @@
 # Git Cheat Sheet
+
 > Quick reference for daily Git commands — works in both Git Bash & PowerShell
 
 ---
 
-## ⚙️ Setup & Config
+## Setup & Config
+
 > One-time configuration when getting started
 
 | Command | Description |
@@ -16,6 +18,7 @@
 ---
 
 ## 🔄 Daily Workflow
+
 > The commands you will use every single day
 
 | Command | Description |
