@@ -60,12 +60,12 @@ The Purchase Reconciliation Tool gives Purchase Cardholders and Approving Offici
 ```text
 Dataverse
   └─ biteam_purchaserequest          (primary entity — Purchase Request)
-  │    ├─ Plugin: AddTpcPrefixPlugin         (Pre-Create, Pre-Update)
+  │    ├─ Plugin: AddTpcPrefixPlugin         (Create, Update)
   │    ├─ Plugin: CreatePcaRecordPlugin      (Post-Create)
   │    └─ Plugin: SyncOccSummaryPlugin       (Create, Update, Delete on allocations)
   │
   └─ cr6c5_pca                       (PCA / Obligation entity)
-       └─ Plugin: AddPcaPrefixPlugin         (Pre-Create, Pre-Update)
+       └─ Plugin: AddPcaPrefixPlugin         (Create, Update)
 
 Web Resources
   ├─ tpcRegexPrompt.js               (TPC field format validation & hint)
