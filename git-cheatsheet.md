@@ -9,7 +9,7 @@
 > One-time configuration when getting started
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git config --global user.name "Your Name"` | Set your display name for commits |
 | `git config --global user.email "you@email.com"` | Set your email for commits |
 | `git config --list` | View all current Git config settings |
@@ -22,7 +22,7 @@
 > The commands you will use every single day
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git status` | See what files are changed, staged, or untracked |
 | `git add .` | Stage ALL changed files for commit |
 | `git add <file>` | Stage one specific file only |
@@ -35,7 +35,7 @@
 ## 🌿 Branches
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git branch` | List all local branches |
 | `git branch <name>` | Create a new branch |
 | `git checkout <name>` | Switch to an existing branch |
@@ -48,7 +48,7 @@
 ## ☁️ Remote / GitHub
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git remote -v` | Show connected remote repos |
 | `git push -u origin <branch>` | Push a new branch to GitHub for the first time |
 | `git fetch` | Check for remote changes without merging |
@@ -59,7 +59,7 @@
 ## ↩️ Undo & Fix
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git restore <file>` | Discard unsaved changes to a file ⚠️ cannot be undone |
 | `git restore --staged <file>` | Unstage a file but keep the changes |
 | `git commit --amend -m "new message"` | Fix the last commit message (only before pushing!) |
@@ -70,7 +70,7 @@
 ## 🔍 Inspect & Compare
 
 | Command | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `git log` | Full commit history |
 | `git log --oneline` | Compact one-line commit history |
 | `git diff` | Show unstaged changes line by line |
@@ -81,7 +81,7 @@
 
 ## ⚡ Your Daily Loop
 
-```
+```bash
 git pull  →  edit files  →  git status  →  git add .  →  git commit -m "..."  →  git push
 ```
 
@@ -99,7 +99,7 @@ git pull  →  edit files  →  git status  →  git add .  →  git commit -m "
 All Git commands above are **identical** in both terminals. The only difference is how you navigate folders:
 
 | | Git Bash | PowerShell |
-|--|---------|------------|
+| -- | --------- | ------------ |
 | Navigate to folder | `cd /c/Users/Name/repos` | `cd C:\Users\Name\repos` |
 | List files | `ls` | `ls` or `dir` |
 | Git commands | Same | Same |
