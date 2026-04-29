@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purchase Reconciliation Tool – Documentation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+    :root {
+      --navy:    #0d1f3c;
+      --teal:    #006e7f;
+      --teal-lt: #e0f4f7;
+      --gold:    #b8860b;
+      --gold-lt: #fdf5dc;
+      --text:    #1a2535;
+      --muted:   #5a6a80;
+      --border:  #c8d4e0;
+      --bg:      #f4f7fa;
+      --white:   #ffffff;
+      --mono:    'IBM Plex Mono', monospace;
+      --sans:    'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    nav {
+      width: 240px;
+      min-width: 240px;
+      background: var(--navy);
+      color: #c8d8ea;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .nav-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7ec8d3;
+      margin-bottom: 4px;
+    }
+
+    .nav-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e8f2ff;
+      line-height: 1.3;
+    }
+
+    .nav-version {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #4a6880;
+      margin-top: 6px;
+    }
+
+    nav ul { list-style: none; padding: 12px 0; }
+
+    nav ul li a {
+      display: block;
+      padding: 7px 20px;
+      color: #8aaec8;
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    nav ul li a:hover, nav ul li a.active {
+      color: #e0f4f7;
+      background: rgba(0,110,127,0.25);
+      border-left-color: #006e7f;
+    }
+
+    .nav-section-label {
+      padding: 16px 20px 4px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #3a5570;
+      font-weight: 600;
+    }
+
+    /* ── MAIN ── */
+    main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 900px;
+    }
+
+    /* ── HERO ── */
+    .doc-hero {
+      background: var(--navy);
+      color: white;
+      border-radius: 8px;
+      padding: 32px 36px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-hero::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(0,110,127,0.25);
+    }
+
+    .doc-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -50px; right: 60px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(184,134,11,0.15);
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #7ec8d3;
+      margin-bottom: 8px;
+    }
+
+    .hero-title { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+    .hero-sub { color: #8aaec8; font-size: 13px; }
+
+    .hero-meta {
+      margin-top: 20px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta span { font-family: var(--mono); font-size: 11px; color: #4a6880; }
+    .hero-meta strong { color: #c8d8ea; font-weight: 500; }
+
+    /* ── SECTIONS ── */
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .section-icon {
+      width: 28px; height: 28px;
+      background: var(--teal);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--teal);
+      margin: 28px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 16px 0 6px;
+    }
+
+    p { margin-bottom: 12px; color: var(--text); }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      border-left: 4px solid;
+      font-size: 13px;
+    }
+
+    .callout.info    { background: var(--teal-lt); border-color: var(--teal); color: #004a57; }
+    .callout.warning { background: var(--gold-lt); border-color: var(--gold); color: #6b4e00; }
+    .callout.note    { background: #f0f0f8; border-color: #7b7bc8; color: #3a3a7a; }
+    .callout.danger  { background: #fff0f0; border-color: #c83232; color: #6b0000; }
+
+    .callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ── CODE ── */
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #e8eef5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #0d3a5c;
+    }
+
+    pre {
+      background: #0d1f3c;
+      color: #c8e6f0;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 18px 20px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+
+    pre .comment { color: #4a6880; }
+    pre .keyword { color: #7ec8d3; }
+    pre .string  { color: #b8d48e; }
+    pre .value   { color: #f0c070; }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin: 12px 0; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    thead tr { background: var(--navy); color: white; }
+    thead th { padding: 10px 14px; text-align: left; font-weight: 500; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: var(--teal-lt); }
+    tbody td { padding: 9px 14px; vertical-align: top; }
+
+    td code { background: transparent; padding: 0; color: var(--teal); }
+
+    /* ── STEP LIST ── */
+    ol.steps { padding-left: 0; list-style: none; counter-reset: steps; }
+
+    ol.steps li {
+      counter-increment: steps;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+
+    ol.steps li::before {
+      content: counter(steps);
+      min-width: 26px; height: 26px;
+      background: var(--teal);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+
+    .badge.plugin  { background: #dce8ff; color: #1a3a8a; }
+    .badge.js      { background: #fff4dc; color: #7a5a00; }
+    .badge.entity  { background: #f0e8ff; color: #5a1a7a; }
+    .badge.pre     { background: #fde8d8; color: #7a3a00; }
+    .badge.post    { background: #d8f0e8; color: #005a2a; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow-diagram {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-step-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      min-width: 130px;
+      text-align: center;
+    }
+
+    .flow-step-box .step-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--teal);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 14px;
+    }
+
+    /* ── CHANGELOG ── */
+    .changelog-entry {
+      display: flex;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .changelog-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 90px;
+    }
+
+    .changelog-desc { font-size: 13px; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<nav>
+  <div class="nav-header">
+    <div class="nav-logo">Purchase Reconciliation Tool</div>
+    <div class="nav-title">App Documentation</div>
+    <div class="nav-version">v1.1 · ProcurementPlugins</div>
+  </div>
+  <ul>
+    <li class="nav-section-label">Overview</li>
+    <li><a href="#overview">About This App</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+
+    <li class="nav-section-label">Data</li>
+    <li><a href="#entities">Entities &amp; Fields</a></li>
+
+    <li class="nav-section-label">Customisations</li>
+    <li><a href="#plugins">C# Plugins</a></li>
+    <li><a href="#webresources">JavaScript Web Resources</a></li>
+
+    <li class="nav-section-label">Operations</li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#known-issues">Known Issues</a></li>
+    <li><a href="#changelog">Change Log</a></li>
+  </ul>
+</nav>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- HERO -->
+  <div class="doc-hero">
+    <div class="hero-label">Internal Technical Documentation</div>
+    <div class="hero-title">Purchase Reconciliation Tool</div>
+    <div class="hero-sub">Model-Driven Power App · Microsoft Dataverse · AJV-C Procurement</div>
+    <div class="hero-meta">
+      <span><strong>Solution:</strong> ProcurementSolution</span>
+      <span><strong>Publisher Prefix:</strong> biteam_</span>
+      <span><strong>Plugin Namespace:</strong> ProcurementPlugins</span>
+      <span><strong>Environment:</strong> Production</span>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <h2><span class="section-icon">📋</span> About This App</h2>
+    <p>
+      The Purchase Reconciliation Tool is a Microsoft Power Apps Model-Driven application built on
+      Dataverse. It gives Purchase Cardholders and Approving Officials a unified view of
+      <strong>PRISM TPC (Commitment)</strong> and <strong>PCA (Obligation)</strong> data down to the
+      allocation level, alongside <strong>US Bank purchase card transaction data</strong>. Users can
+      document purchase request items against a TPC from various vendors and verify that purchase
+      totals reconcile against both the TPC commitment and the PCA obligation.
+    </p>
+
+    <h3>User Roles</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Responsibilities</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Purchase Cardholder</strong></td>
+            <td>Creates purchase requests, adds line items (vendor, items, recipient, estimated and actual costs), adds TPC allocations, and associates US Bank transactions to allocations.</td>
+          </tr>
+          <tr>
+            <td><strong>Approving Official (Manager)</strong></td>
+            <td>Reviews purchase requests and validates reconciliation totals against TPC commitments and PCA obligations.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout info">
+      <strong>Audience</strong>
+      This document is intended for developers and system administrators responsible for maintaining,
+      extending, or deploying this solution. End-user guidance is covered in the separate User Guide.
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <h2><span class="section-icon">🏗</span> Architecture</h2>
+    <p>
+      The solution follows a standard Power Platform layered pattern. Dataverse provides the data
+      platform, C# server-side plugins enforce data integrity and automate record management,
+      and JavaScript web resources provide guided user input and real-time validation on UCI
+      model-driven forms.
+    </p>
+    <pre>
+Dataverse
+  ├─ biteam_purchaserequest        <span class="comment">(Purchase Request — primary entity)</span>
+  │    ├─ Plugin: AddTpcPrefixPlugin          <span class="comment">(Pre-Create, stage 20)</span>
+  │    └─ JS:     tpcRegexPrompt.js           <span class="comment">(onLoad, onSave, onChange)</span>
+  │
+  ├─ cr6c5_pca                     <span class="comment">(PCA / Obligation)</span>
+  │    ├─ Plugin: AddPcaPrefixPlugin          <span class="comment">(Pre-Create, stage 20)</span>
+  │    └─ JS:     pcaRegExPrompt.js           <span class="comment">(onLoad, onSave, onChange)</span>
+  │
+  ├─ biteam_tpcallocations         <span class="comment">(TPC Allocation)</span>  
+  │    ├─ Plugin: OccSummaryOnAllocationDeletePlugin  <span class="comment">(Pre-Delete, stage 20)</span>
+  │    └─ JS:     tpcAllocation_Prepop.js     <span class="comment">(Quick Create onLoad)</span>
+  │
+  ├─ cr6c5_usbanktransactions      <span class="comment">(US Bank Transactions)</span>
+  │    └─ Plugin: SyncOccSummaryPlugin        <span class="comment">(Post Create/Update/Delete, stage 40)</span>
+  │
+  └─ biteam_occsummary             <span class="comment">(OCC Summary — plugin-maintained child entity)</span>
+       └─ Surfaced as read-only subgrid on Purchase Request form</pre>
+  </section>
+
+  <!-- ENTITIES -->
+  <section id="entities">
+    <h2><span class="section-icon">🗄</span> Entities &amp; Fields</h2>
+
+    <!-- Purchase Request -->
+    <h3>biteam_purchaserequest — Purchase Request</h3>
+    <p>Primary entity. Represents a single purchase request tied to a TPC commitment number.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Display Name</th><th>Schema Name</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>TPC Number</td><td><code>biteam_Name</code></td><td>Single line of text</td><td>Yes</td><td>Primary name column. User enters <code>YY-XXXXXX</code>; plugin prepends <code>TPC-</code> automatically on save.</td></tr>
+          <tr><td>Purchase Request Number</td><td><code>biteam_PurchaseRequestNumber</code></td><td>Text area</td><td>No</td><td>Auto-generated reference number.</td></tr>
+          <tr><td>TPC Amount</td><td><code>biteam_TPCAmount</code></td><td>Currency</td><td>No</td><td>Committed amount of funds for the TPC.</td></tr>
+          <tr><td>TPC Approval Date</td><td><code>biteam_TPCApprovalDate</code></td><td>Date only</td><td>No</td><td>Date the TPC was approved.</td></tr>
+          <tr><td>Date of Request</td><td><code>biteam_DateofRequest</code></td><td>Date only</td><td>No</td><td>Date the purchase request was initiated.</td></tr>
+          <tr><td>Purchase Status</td><td><code>biteam_PurchaseStatus</code></td><td>Choice</td><td>No</td><td>Tracks lifecycle status of the request.</td></tr>
+          <tr><td>Team</td><td><code>biteam_Team</code></td><td>Lookup</td><td>No</td><td>Team associated with the request.</td></tr>
+          <tr><td>Comments</td><td><code>biteam_Comments</code></td><td>Rich text</td><td>No</td><td>Free-text notes field.</td></tr>
+          <tr><td>Owner</td><td><code>OwnerId</code></td><td>Owner</td><td>Yes</td><td>System field — defaults to creating user.</td></tr>
+          <tr><td>Status</td><td><code>statecode</code></td><td>Choice</td><td>Yes</td><td>Active / Inactive.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warning">
+      <strong>Column Length Constraint</strong>
+      <code>biteam_Name</code> max length is capped at <strong>13 characters</strong> to accommodate
+      the server-side <code>TPC-</code> prefix (4 chars) + the user-entered <code>YY-XXXXXX</code> (9 chars).
+      Do not revert to the default 100 without reviewing plugin logic.
+    </div>
+
+    <!-- PCA -->
+    <h3>cr6c5_pca — PCA (Obligation)</h3>
+    <p>Automatically created by the <code>AddTpcPrefixPlugin</code> when a new Purchase Request is saved. Represents the corresponding PCA obligation record in PRISM.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Display Name</th><th>Schema Name</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PCA Number</td><td><code>cr6c5_PCANumber</code></td><td>Single line of text</td><td>Yes</td><td>Primary name column. Plugin derives this by replacing <code>TPC-</code> with <code>PCA-</code> from the parent TPC number.</td></tr>
+          <tr><td>PCA Amount</td><td><code>cr6c5_PCAAmount</code></td><td>Currency</td><td>No</td><td>Obligation amount corresponding to the TPC.</td></tr>
+          <tr><td>Purchase Request</td><td><code>biteam_PurchaseRequest</code></td><td>Lookup</td><td>No</td><td>Links back to the parent <code>biteam_purchaserequest</code> record.</td></tr>
+          <tr><td>Owner</td><td><code>OwnerId</code></td><td>Owner</td><td>Yes</td><td>System field.</td></tr>
+          <tr><td>Status</td><td><code>statecode</code></td><td>Choice</td><td>Yes</td><td>Active / Inactive.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TPC Allocations -->
+    <h3>biteam_tpcallocations — TPC Allocations</h3>
+    <p>Child records of a Purchase Request. Each allocation represents a funding string breakdown for a portion of the TPC. A single Purchase Request can have multiple allocations.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Display Name</th><th>Schema Name</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>TPC Allocation Number</td><td><code>biteam_Name</code></td><td>Autonumber</td><td>No</td><td>Primary name column. System-generated.</td></tr>
+          <tr><td>Purchase Request</td><td><code>biteam_PurchaseRequest</code></td><td>Lookup</td><td>No</td><td>Parent Purchase Request record.</td></tr>
+          <tr><td>Project Code</td><td><code>biteam_ProjectCode</code></td><td>Lookup → <code>cr6c5_projecttask</code></td><td>Yes</td><td>Pre-populated from most recent allocation via <code>tpcAllocation_Prepop.js</code>.</td></tr>
+          <tr><td>PRISM OCC</td><td><code>biteam_PRISMOCC</code></td><td>Lookup → <code>cr6c5_objectclassification</code></td><td>Yes</td><td>Object Classification Code. Pre-populated; also read by <code>SyncOccSummaryPlugin</code>.</td></tr>
+          <tr><td>REGIS Org Code</td><td><code>biteam_REGISOrgCode</code></td><td>Lookup → <code>cr6c5_regisorganizationcodes</code></td><td>Yes</td><td>Pre-populated from most recent allocation.</td></tr>
+          <tr><td>BLI</td><td><code>biteam_BLI</code></td><td>Lookup → <code>cr6c5_businesslineitem</code></td><td>Yes</td><td>Business Line Item. Pre-populated from most recent allocation.</td></tr>
+          <tr><td>Fund Code</td><td><code>biteam_FundCode</code></td><td>Single line of text</td><td>Yes</td><td>Intentionally <strong>not</strong> pre-populated — user must enter per allocation.</td></tr>
+          <tr><td>TPC Allocation Amount</td><td><code>biteam_TPCAllocationAmount</code></td><td>Currency</td><td>No</td><td>Intentionally <strong>not</strong> pre-populated — user must enter per allocation.</td></tr>
+          <tr><td>PRISM Organization Code</td><td><code>biteam_PRISMOrganizationCode</code></td><td>Lookup</td><td>No</td><td>Organization code from PRISM.</td></tr>
+          <tr><td>Accounting String</td><td><code>biteam_AccountingString</code></td><td>Single line of text</td><td>No</td><td>Derived accounting string for the allocation.</td></tr>
+          <tr><td>Task Code</td><td><code>biteam_taskcode_display</code></td><td>Single line of text</td><td>No</td><td>Displayed beneath Project Code lookup. Read-only display field.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout note">
+      <strong>Quick Create Pre-Population</strong>
+      When a new allocation is created via the Quick Create form from the Purchase Request subgrid,
+      <code>tpcAllocation_Prepop.js</code> auto-populates Project Code, PRISM OCC, REGIS Org Code,
+      and BLI from the most recently saved allocation. Fund Code and Amount are always left blank.
+    </div>
+
+    <!-- OCC Summary -->
+    <h3>biteam_occsummary — OCC Summary</h3>
+    <p>Plugin-maintained child entity. Each row represents the aggregated total of all US Bank transactions for a given Purchase Request + OCC combination. Surfaced as a <strong>read-only subgrid</strong> on the Purchase Request form. Never edited manually.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Display Name</th><th>Schema Name</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>OCC</td><td><code>biteam_Name</code></td><td>Single line of text</td><td>Yes</td><td>Primary name column. Set to the OCC display code (e.g. <code>2510</code>).</td></tr>
+          <tr><td>OCC</td><td><code>biteam_OCC</code></td><td>Lookup → <code>cr6c5_objectclassification</code></td><td>No</td><td>Reference to the OCC record.</td></tr>
+          <tr><td>Purchase Request</td><td><code>biteam_PurchaseRequest</code></td><td>Lookup</td><td>No</td><td>Parent Purchase Request record.</td></tr>
+          <tr><td>Total Transaction Amount</td><td><code>biteam_TotalTransactionAmount</code></td><td>Currency</td><td>No</td><td>Sum of all active US Bank transaction amounts for this PR + OCC. Maintained by <code>SyncOccSummaryPlugin</code>.</td></tr>
+          <tr><td>Status</td><td><code>statecode</code></td><td>Choice</td><td>Yes</td><td>Active / Inactive.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout danger">
+      <strong>Do Not Edit Manually</strong>
+      OCC Summary records are fully managed by <code>SyncOccSummaryPlugin</code> and
+      <code>OccSummaryOnAllocationDeletePlugin</code>. Manual edits will be overwritten on
+      the next transaction Create, Update, or Delete event. Security role privileges enforce
+      read-only behavior on this entity for end users.
+    </div>
+  </section>
+
+  <!-- PLUGINS -->
+  <section id="plugins">
+    <h2><span class="section-icon">⚙️</span> C# Plugins</h2>
+    <p>All plugins share the namespace <code>ProcurementPlugins</code> and are compiled into a single assembly: <code>ProcurementPlugins.dll</code>.</p>
+
+    <!-- AddTpcPrefixPlugin -->
+    <h3>AddTpcPrefixPlugin</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge pre">Pre-Operation</span>
+      <span class="badge entity">biteam_purchaserequest</span>
+    </p>
+    <p>
+      Automatically prepends <code>TPC-</code> to the <code>biteam_name</code> field before a new
+      Purchase Request record is created. Because this runs at Pre-Operation (stage 20),
+      mutating the Target entity is sufficient — no separate service call is needed.
+      Includes a duplicate-prefix guard to prevent stacking if the record is re-processed.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Class</td><td><code>AddTpcPrefixPlugin</code></td></tr>
+          <tr><td>Message</td><td>Create</td></tr>
+          <tr><td>Entity</td><td><code>biteam_purchaserequest</code></td></tr>
+          <tr><td>Stage</td><td>Pre-Operation (20)</td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+          <tr><td>Execution Order</td><td>1</td></tr>
+          <tr><td>Images Required</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AddPcaPrefixPlugin -->
+    <h3>AddPcaPrefixPlugin</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge pre">Pre-Operation</span>
+      <span class="badge entity">cr6c5_pca</span>
+    </p>
+    <p>
+      Automatically prepends <code>PCA-</code> to the <code>cr6c5_pcanumber</code> field before a new
+      PCA record is created. Follows the same defensive guard pattern as <code>AddTpcPrefixPlugin</code>:
+      six explicit guards (service availability, message, stage, depth, Target existence, entity name)
+      before any business logic executes. Includes three-tier exception handling
+      (<code>InvalidPluginExecutionException</code>, <code>FaultException&lt;OrganizationServiceFault&gt;</code>,
+      and general <code>Exception</code>).
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Class</td><td><code>AddPcaPrefixPlugin</code></td></tr>
+          <tr><td>Message</td><td>Create</td></tr>
+          <tr><td>Entity</td><td><code>cr6c5_pca</code></td></tr>
+          <tr><td>Stage</td><td>Pre-Operation (20)</td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+          <tr><td>Execution Order</td><td>1</td></tr>
+          <tr><td>Images Required</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SyncOccSummaryPlugin -->
+    <h3>SyncOccSummaryPlugin</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge post">Post-Operation</span>
+      <span class="badge entity">cr6c5_usbanktransactions</span>
+    </p>
+    <p>
+      Maintains the <code>biteam_occsummary</code> child entity whenever a US Bank transaction is
+      created, updated, or deleted. Fires on all three messages at Post-Operation stage 40.
+      On Update, filtered attributes limit execution to changes in transaction amount,
+      associated OCC, or associated purchase request — preventing unnecessary firing.
+    </p>
+
+    <h4>Execution Flow</h4>
+    <div class="flow-diagram">
+      <div class="flow-step-box"><span class="step-num">STEP 1</span>Resolve OCC from transaction or TPC Allocation</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 2</span>Write OCC back to transaction record</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 3</span>Re-aggregate all active transaction amounts for PR + OCC</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 4</span>Upsert OCC Summary row (update or create)</div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Class</td><td><code>SyncOccSummaryPlugin</code></td></tr>
+          <tr><td>Message</td><td>Create, Update, Delete</td></tr>
+          <tr><td>Entity</td><td><code>cr6c5_usbanktransactions</code></td></tr>
+          <tr><td>Stage</td><td>Post-Operation (40)</td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+          <tr><td>Filtering Attributes (Update only)</td><td><code>cr6c5_transactionamount</code>, <code>biteam_associatedocc</code>, <code>biteam_purchaserequest</code></td></tr>
+          <tr><td>Images Required</td><td>PostImage (all columns) on Create/Update · PreImage (all columns) on Delete</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <strong>Recursion Guard</strong>
+      This plugin writes <code>biteam_associatedocc</code> back to the transaction record when resolving OCC via TPC Allocation.
+      The <code>Depth &gt; 1</code> guard is critical — it prevents the plugin from recursively triggering itself
+      on that write-back update.
+    </div>
+
+    <div class="callout note">
+      <strong>MergeWithPostImage Helper</strong>
+      On Update, partial payloads may only contain changed fields. The <code>MergeWithPostImage</code>
+      helper merges the Update Target with the PostImage so unchanged lookup fields (like
+      Purchase Request) are always available regardless of what triggered the update.
+    </div>
+
+    <!-- OccSummaryOnAllocationDeletePlugin -->
+    <h3>OccSummaryOnAllocationDeletePlugin</h3>
+    <p>
+      <span class="badge plugin">Plugin</span>
+      <span class="badge pre">Pre-Operation</span>
+      <span class="badge entity">biteam_tpcallocations</span>
+    </p>
+    <p>
+      Recalculates or removes the <code>biteam_occsummary</code> record when a TPC Allocation is
+      hard-deleted. Runs at Pre-Operation (stage 20) so the record still physically exists in Dataverse
+      — which allows remaining allocations to be queried. The deleting record is explicitly excluded
+      from the remaining-allocations query using a <code>NotEqual</code> condition on its ID.
+    </p>
+
+    <h4>Execution Flow</h4>
+    <div class="flow-diagram">
+      <div class="flow-step-box"><span class="step-num">STEP 1</span>Read OCC and parent PR from PreImage</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 2</span>Query remaining allocations for same OCC (excluding deleting record)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 3</span>Find existing OCC Summary record</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 4</span>Delete summary if no allocations remain · Recalculate and update if allocations remain</div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Class</td><td><code>OccSummaryOnAllocationDeletePlugin</code></td></tr>
+          <tr><td>Message</td><td>Delete</td></tr>
+          <tr><td>Entity</td><td><code>biteam_tpcallocations</code></td></tr>
+          <tr><td>Stage</td><td>Pre-Operation (20)</td></tr>
+          <tr><td>Execution Mode</td><td>Synchronous</td></tr>
+          <tr><td>Execution Order</td><td>1</td></tr>
+          <tr><td>Images Required</td><td>PreImage (all columns) — mandatory</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <strong>Why Pre-Operation for Delete?</strong>
+      The PreImage on a Delete step is the <em>only</em> reliable source of data for the record
+      being deleted. Running at Pre-Operation (stage 20) also means the record still exists in
+      Dataverse during execution, which allows the remaining-allocations query to run correctly
+      with the explicit <code>NotEqual</code> exclusion of the deleting record's ID.
+    </div>
+
+    <div class="callout note">
+      <strong>Adding More Plugins</strong>
+      Additional plugin classes can be added to the same DLL without re-registering the assembly.
+      Only a new Step registration is needed in the Plugin Registration Tool. If the plugin count
+      grows significantly, consider refactoring to a single configurable plugin using the
+      <strong>Unsecure Configuration</strong> field.
+    </div>
+  </section>
+
+  <!-- JAVASCRIPT WEB RESOURCES -->
+  <section id="webresources">
+    <h2><span class="section-icon">📜</span> JavaScript Web Resources</h2>
+    <p>All JavaScript files share the <code>ProcurementForms</code> namespace, using the revealing module pattern (IIFE) to keep functions private and expose only the public API needed by form event wiring.</p>
+
+    <!-- tpcRegexPrompt.js -->
+    <h3>tpcRegexPrompt.js</h3>
+    <p>
+      <span class="badge js">JavaScript</span>
+      <span class="badge entity">biteam_purchaserequest</span>
+    </p>
+    <p>
+      Validates the TPC number field (<code>biteam_name</code>) against the required format
+      <code>YY-XXXXXX</code> (two fiscal year digits, a dash, six digits). Provides real-time
+      progressive guidance as the user types, and blocks save if the format is invalid.
+      Only fires on <strong>Create forms</strong> (formType === 1).
+    </p>
+
+    <h4>Form Event Wiring</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Function</th><th>Pass Execution Context</th></tr></thead>
+        <tbody>
+          <tr><td>OnLoad</td><td><code>ProcurementForms.Tpc.onLoad</code></td><td>Yes</td></tr>
+          <tr><td>OnSave</td><td><code>ProcurementForms.Tpc.onSave</code></td><td>Yes</td></tr>
+          <tr><td>OnChange (<code>biteam_name</code>)</td><td>Registered programmatically via <code>attribute.addOnChange</code> in onLoad</td><td>N/A</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Validation Stages (onChange)</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Case</th><th>Pattern</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>Empty</td><td>—</td><td>Restores the format hint notification</td></tr>
+          <tr><td>Valid</td><td><code>/^\d{2}-\d{6}$/</code></td><td>Clears all notifications — no action needed</td></tr>
+          <tr><td>Partial — year only</td><td><code>/^\d{1,2}$/</code></td><td>Guides user to add a dash</td></tr>
+          <tr><td>Partial — year + dash</td><td><code>/^\d{2}-$/</code></td><td>Guides user to enter 6 digits</td></tr>
+          <tr><td>Partial — incomplete number</td><td><code>/^\d{2}-\d{1,5}$/</code></td><td>Tells user exactly how many digits remain</td></tr>
+          <tr><td>Wrong format</td><td>None of the above</td><td>Shows error — correct format with example</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>onSave Behaviour</h4>
+    <p>Calls <code>preventDefault()</code> to block save if the value is not valid. Exception: if the value already starts with <code>TPC-</code> and is 13 characters long, save is allowed — this handles the case where the plugin has already run (e.g. on a re-save).</p>
+
+    <div class="callout note">
+      <strong>Fiscal Year Detection</strong>
+      Current and prior fiscal year digits are derived dynamically at runtime using
+      <code>new Date().getFullYear()</code>, so the hints stay accurate across fiscal years
+      without code changes.
+    </div>
+
+    <!-- pcaRegExPrompt.js -->
+    <h3>pcaRegExPrompt.js</h3>
+    <p>
+      <span class="badge js">JavaScript</span>
+      <span class="badge entity">cr6c5_pca</span>
+    </p>
+    <p>
+      Mirrors <code>tpcRegexPrompt.js</code> exactly in structure and logic, applied to the PCA number
+      field (<code>cr6c5_pcanumber</code>) on the PCA entity form. All staged validation patterns,
+      fiscal year detection, and notification behaviour are identical.
+    </p>
+
+    <h4>Key Differences from tpcRegexPrompt.js</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>tpcRegexPrompt.js</th><th>pcaRegExPrompt.js</th></tr></thead>
+        <tbody>
+          <tr><td>Namespace</td><td><code>ProcurementForms.Tpc</code></td><td><code>ProcurementForms.Pca</code></td></tr>
+          <tr><td>Field</td><td><code>biteam_name</code></td><td><code>cr6c5_pcanumber</code></td></tr>
+          <tr><td>Notification ID</td><td><code>tpc_name_hint</code></td><td><code>pca_name_hint</code></td></tr>
+          <tr><td>onSave prefix bypass</td><td>Yes — allows <code>TPC-XXXXXXXXX</code></td><td>No — always validates raw format</td></tr>
+          <tr><td>Null guard on executionContext</td><td>Yes — defensive check</td><td>No — assumes valid context</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- tpcAllocation_Prepop.js -->
+    <h3>tpcAllocation_Prepop.js</h3>
+    <p>
+      <span class="badge js">JavaScript</span>
+      <span class="badge entity">biteam_tpcallocations</span>
+    </p>
+    <p>
+      Fires on the Quick Create form for TPC Allocations when opened from the Purchase Request subgrid.
+      Queries the WebAPI for the most recently created allocation under the same Purchase Request,
+      then pre-populates four lookup fields to reduce repetitive data entry.
+    </p>
+
+    <h4>Form Event Wiring</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Function</th><th>Pass Execution Context</th></tr></thead>
+        <tbody>
+          <tr><td>OnLoad (Quick Create form)</td><td><code>ProcurementForms.TpcAllocations.onLoad</code></td><td>Yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Execution Flow</h4>
+    <div class="flow-diagram">
+      <div class="flow-step-box"><span class="step-num">STEP 1</span>Read parent Purchase Request GUID from lookup field</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 2</span>Query WebAPI: most recent allocation for parent PR (orderby createdon desc, top 1)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 3</span>Pre-populate 4 lookup fields from retrieved record</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 4</span>Show INFO notification with review reminder</div>
+    </div>
+
+    <h4>Fields Pre-Populated vs. Left Blank</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>Schema Name</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>Project Code</td><td><code>biteam_projectcode</code></td><td>✅ Pre-populated from most recent allocation</td></tr>
+          <tr><td>PRISM OCC</td><td><code>biteam_prismocc</code></td><td>✅ Pre-populated from most recent allocation</td></tr>
+          <tr><td>REGIS Org Code</td><td><code>biteam_regisorgcode</code></td><td>✅ Pre-populated from most recent allocation</td></tr>
+          <tr><td>BLI</td><td><code>biteam_bli</code></td><td>✅ Pre-populated from most recent allocation</td></tr>
+          <tr><td>Fund Code</td><td><code>biteam_fundcode</code></td><td>⬜ Intentionally left blank — user must enter</td></tr>
+          <tr><td>TPC Allocation Amount</td><td><code>biteam_tpcallocationamount</code></td><td>⬜ Intentionally left blank — user must enter</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout note">
+      <strong>OData Lookup Resolution</strong>
+      Lookup field values are retrieved using OData navigation property names
+      (e.g. <code>_biteam_projectcode_value</code>) which return both the GUID and the
+      <code>@OData.Community.Display.V1.FormattedValue</code> for the display name.
+      The entity type constants in the file must match the <code>lookuplogicalname</code>
+      returned in the OData response — not the field logical name on the allocation entity.
+    </div>
+
+    <div class="callout warning">
+      <strong>Fails Gracefully</strong>
+      If the WebAPI query fails or no prior allocation exists, the form simply opens blank.
+      The user can still fill in all fields manually. No error is surfaced to the user —
+      failures are logged to the browser console only.
+    </div>
+  </section>
+
+  <!-- DEPLOYMENT -->
+  <section id="deployment">
+    <h2><span class="section-icon">🚀</span> Deployment</h2>
+
+    <h3>Plugin Assembly</h3>
+    <ol class="steps">
+      <li>Build the solution in Visual Studio in <strong>Release mode</strong> (not Debug).</li>
+      <li>Open the <strong>Plugin Registration Tool</strong> and connect to the target environment.</li>
+      <li>If the assembly is already registered — click <strong>Update</strong> to upload the new DLL.</li>
+      <li>If registering for the first time — click <strong>Register New Assembly</strong>.</li>
+      <li>Register or verify Steps for each plugin (see registration tables above).</li>
+      <li>Confirm PreImage is registered on the Delete step of <code>OccSummaryOnAllocationDeletePlugin</code>.</li>
+      <li>Confirm PostImage is registered on Create and Update steps of <code>SyncOccSummaryPlugin</code>.</li>
+      <li>Test end-to-end: create a Purchase Request, confirm <code>TPC-</code> prefix and linked PCA record appear.</li>
+    </ol>
+
+    <h3>Full Solution Deployment</h3>
+    <ol class="steps">
+      <li>Export the solution as <strong>Managed</strong> from the source environment via make.powerapps.com.</li>
+      <li>Import into the target environment via the Power Platform Admin Center or PAC CLI.</li>
+      <li>Verify plugin assembly steps are active post-import.</li>
+      <li>Run an end-to-end test: create a Purchase Request → add allocations → associate a US Bank transaction → validate the OCC Summary subgrid updates correctly.</li>
+    </ol>
+
+    <div class="callout danger">
+      <strong>Import Failures</strong>
+      Import failures are almost always caused by a <strong>Debug build</strong> DLL being included
+      in the solution export. Always build in Release mode before exporting. Verify in Visual Studio:
+      Build → Configuration Manager → confirm Active Solution Configuration is <strong>Release</strong>.
+    </div>
+  </section>
+
+  <!-- KNOWN ISSUES -->
+  <section id="known-issues">
+    <h2><span class="section-icon">⚠️</span> Known Issues</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Issue</th><th>Symptom</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Lingering INFO notification on save</td>
+            <td>Error code <code>2200000007</code> appears after save</td>
+            <td>Call <code>clearNotification()</code> at the start of <code>onSave()</code></td>
+          </tr>
+          <tr>
+            <td>Hint reappears on existing records</td>
+            <td>Format hint shown on already-saved records on load</td>
+            <td><code>setTimeout</code> guard in <code>onLoad</code> checks <code>formType !== 1</code> before setting hint; exits early for non-Create forms</td>
+          </tr>
+          <tr>
+            <td><code>OnPostSave</code> event not available</td>
+            <td>Event missing from form editor in this environment</td>
+            <td>Notification cleanup logic moved to <code>onLoad</code> instead</td>
+          </tr>
+          <tr>
+            <td>Unused import in OccSummaryOnAllocationDeletePlugin</td>
+            <td><code>using System.Web.UI.WebControls</code> has no references</td>
+            <td>Safe to remove in a future cleanup — no functional impact</td>
+          </tr>
+          <tr>
+            <td>pcaRegExPrompt.js missing null guard</td>
+            <td><code>_getFormData</code> does not null-check <code>executionContext</code> before calling <code>getFormContext()</code></td>
+            <td>Add defensive null check matching the pattern in <code>tpcRegexPrompt.js</code> in a future update</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section id="changelog">
+    <h2><span class="section-icon">📝</span> Change Log</h2>
+
+    <div class="changelog-entry">
+      <div class="changelog-date">2025 Q1</div>
+      <div class="changelog-desc">
+        <strong>v1.0 — Initial Release</strong><br>
+        <code>AddTpcPrefixPlugin</code> (Pre-Create) · <code>tpcRegexPrompt.js</code> onLoad/onSave/onChange ·
+        <code>biteam_name</code> max length set to 13 · <code>setTimeout</code> notification guard added.
+      </div>
+    </div>
+
+    <div class="changelog-entry">
+      <div class="changelog-date">2025 Q2</div>
+      <div class="changelog-desc">
+        <strong>v1.1 — OCC Summary, PCA Automation &amp; Allocation Pre-Population</strong><br>
+        <code>AddPcaPrefixPlugin</code> (Pre-Create on cr6c5_pca) ·
+        <code>SyncOccSummaryPlugin</code> (Post Create/Update/Delete on US Bank Transactions) ·
+        <code>OccSummaryOnAllocationDeletePlugin</code> (Pre-Delete on TPC Allocations) ·
+        <code>pcaRegExPrompt.js</code> · <code>tpcAllocation_Prepop.js</code> ·
+        <code>biteam_occsummary</code> entity added as read-only subgrid on Purchase Request form.
+      </div>
+    </div>
+
+    <div class="changelog-entry">
+      <div class="changelog-date">—</div>
+      <div class="changelog-desc"><em>Future entries go here.</em></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Purchase Reconciliation Tool · Internal Use Only · AJV-C Procurement</span>
+    <span>ProcurementPlugins v1.1 · biteam_ publisher</span>
+  </footer>
+
+</main>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
