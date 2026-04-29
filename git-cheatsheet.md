@@ -98,11 +98,11 @@ git pull  →  edit files  →  git status  →  git add .  →  git commit -m "
 
 All Git commands above are **identical** in both terminals. The only difference is how you navigate folders:
 
-| | Git Bash | PowerShell |
-| -- | --------- | ------------ |
-| Navigate to folder | `cd /c/Users/Name/repos` | `cd C:\Users\Name\repos` |
-| List files | `ls` | `ls` or `dir` |
-| Git commands | Same | Same |
+|                    | Git Bash                | PowerShell                |
+| -------------------| ------------------------| --------------------------|
+| Navigate to folder | `cd /c/Users/Name/repos`| `cd C:\Users\Name\repos`  |
+| List files         | `ls`                    | `ls` or `dir`             |
+| Git commands       | Same                    | Same                      |
 
 ---
 
