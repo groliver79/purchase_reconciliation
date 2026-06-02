@@ -20,9 +20,10 @@ namespace ProcurementPlugins
     ///  Messages: Create (Post-Operation, Stage 40, Sync) - PostImage: all columns
     ///            Update (Post-Operation, Stage 40, Sync) - PostImage: all columns
     ///            Filtering attributes (Update step only):
-    ///                                 cr6c5_transactionamount, 
-    ///                                 biteam_associatedocc, 
-    ///                                 biteam_purchaserequest
+    ///                                 cr6c5_transactionamount,
+    ///                                 biteam_associatedocc,
+    ///                                 biteam_purchaserequest,
+    ///                                 biteam_associatedtpcallocation
     ///            Delete (Post-Operation, Stage 40, Sync) - PreImage: all columns
     ///  
     /// </summary>
@@ -110,10 +111,20 @@ namespace ProcurementPlugins
                     }
 
                     // STEP 1: Resolve OCC
-                    occId = GetLookupId(source, FieldAssociatedOcc);
-                    if (occId == Guid.Empty)
+                    // Always re-resolve when TPC Allocation is explicitly changed so the new
+                    // allocation's OCC overwrites the stale value already on the transaction.
+                    bool tpcAllocChanged = context.MessageName.Equals("Update", StringComparison.OrdinalIgnoreCase)
+                        && target != null
+                        && target.Contains(FieldAssociatedTpcAlloc);
+
+                    Guid oldOccId = GetLookupId(source, FieldAssociatedOcc);
+                    occId = oldOccId;
+
+                    if (occId == Guid.Empty || tpcAllocChanged)
                     {
-                        tracingService.Trace("biteam_associatedocc empty — resolving via TPC Allocation.");
+                        tracingService.Trace(tpcAllocChanged
+                            ? "TPC Allocation changed — re-resolving OCC."
+                            : "biteam_associatedocc empty — resolving via TPC Allocation.");
                         occId = ResolveOccFromTpcAllocation(orgService, source, transactionId, tracingService);
                     }
 
@@ -121,6 +132,16 @@ namespace ProcurementPlugins
                     {
                         tracingService.Trace("OCC could not be resolved — TPC Allocation may not be set. Skipping.");
                         return;
+                    }
+
+                    // If the OCC changed, recalculate the old OCC summary so its total no
+                    // longer includes this transaction's amount.
+                    if (tpcAllocChanged && oldOccId != Guid.Empty && oldOccId != occId)
+                    {
+                        tracingService.Trace($"OCC changed from {oldOccId} to {occId} — recalculating old OCC summary.");
+                        decimal oldOccTotal = AggregateTotalAmount(orgService, purchaseRequestId, oldOccId, tracingService);
+                        string oldOccCode = GetOccCode(orgService, oldOccId);
+                        UpsertOccSummary(orgService, purchaseRequestId, oldOccId, oldOccCode, oldOccTotal, tracingService);
                     }
                 }
 
