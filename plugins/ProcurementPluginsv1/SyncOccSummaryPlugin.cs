@@ -23,7 +23,8 @@ namespace ProcurementPlugins
     ///                                 cr6c5_transactionamount,
     ///                                 biteam_associatedocc,
     ///                                 biteam_purchaserequest,
-    ///                                 biteam_associatedtpcallocation
+    ///                                 biteam_associatedtpcallocation,
+    ///                                 statecode
     ///            Delete (Post-Operation, Stage 40, Sync) - PreImage: all columns
     ///  
     /// </summary>
