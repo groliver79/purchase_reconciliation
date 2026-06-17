@@ -6,22 +6,27 @@ using System.Web.UI.WebControls;
 
 namespace ProcurementPlugins
 {   ///<summary>
-    ///Pre-Operation Delete plugin that recalculates or removes the
-    ///biteam_occsummary record when a biteam_tpcallocations record is 
-    ///hard deleted.
+    ///Recalculates or removes the biteam_occsummary record when a
+    ///biteam_tpcallocations record is hard-deleted or deactivated.
     ///
-    /// Registration Settings (Plugin Registration Tool): 
-    /// Message:    Delete
-    /// Entity:     biteam_tpcallocations
-    /// Stage: Pre-Operation (20)
-    /// Mode: Synchronous
-    /// Execution Order 1
-    /// 
-    /// Pre-Image required:
-    /// Image Type: Pre-Image
-    /// Name: PreImage
-    /// Alias: PreImage
-    /// Parameters: All fields
+    /// Registration Settings (Plugin Registration Tool):
+    ///
+    /// Step 1 – Delete
+    ///   Message:    Delete
+    ///   Entity:     biteam_tpcallocations
+    ///   Stage:      Pre-Operation (20)
+    ///   Mode:       Synchronous
+    ///   Execution Order 1
+    ///   Pre-Image:  Name/Alias = PreImage, Parameters = All fields
+    ///
+    /// Step 2 – Deactivate / Reactivate
+    ///   Message:    Update
+    ///   Entity:     biteam_tpcallocations
+    ///   Stage:      Post-Operation (40)
+    ///   Mode:       Synchronous
+    ///   Execution Order 1
+    ///   Filtering Attributes: statecode
+    ///   Post-Image: Name/Alias = PostImage, Parameters = All fields
     ///</summary>
     public class OccSummaryOnAllocationDeletePlugin : IPlugin
     {
@@ -39,8 +44,11 @@ namespace ProcurementPlugins
         private const string OccSummaryAmountField = "biteam_totaltransactionamount";
 
         private const string PreImageAlias = "PreImage";
+        private const string PostImageAlias = "PostImage";
         private const string DeleteMessage = "Delete";
+        private const string UpdateMessage = "Update";
         private const int PreOperationStage = 20;
+        private const int PostOperationStage = 40;
 
         public void Execute(IServiceProvider serviceProvider) 
         { 
@@ -65,72 +73,106 @@ namespace ProcurementPlugins
                 context.MessageName, context.Stage, context.Depth);
 
             //--2. Guards
-            if (!context.MessageName.Equals(DeleteMessage, StringComparison.OrdinalIgnoreCase))
-            {
-                tracingService.Trace("Exiting: message is not Delete");
-                return;
-            } 
+            bool isDelete = context.MessageName.Equals(DeleteMessage, StringComparison.OrdinalIgnoreCase);
+            bool isUpdate = context.MessageName.Equals(UpdateMessage, StringComparison.OrdinalIgnoreCase);
 
-            if (context.Stage != PreOperationStage) 
+            if (!isDelete && !isUpdate)
             {
-                tracingService.Trace(
-                    "Exiting: stage is not Pre-Operation(20).");
+                tracingService.Trace("Exiting: message is not Delete or Update.");
                 return;
             }
 
-            if (context.Depth > 1) 
+            if (isDelete && context.Stage != PreOperationStage)
+            {
+                tracingService.Trace("Exiting: Delete stage is not Pre-Operation (20).");
+                return;
+            }
+
+            if (isUpdate && context.Stage != PostOperationStage)
+            {
+                tracingService.Trace("Exiting: Update stage is not Post-Operation (40).");
+                return;
+            }
+
+            if (context.Depth > 1)
             {
                 tracingService.Trace("Exiting: Depth > 1");
                 return;
             }
 
-
-            //--3. Start of Business Logic : Read deleted record values from the Pre-Image
-            //Note: Pre-Image is the ONLY reliable source for a record being deleted
-            if (!context.PreEntityImages.Contains(PreImageAlias)) 
+            if (isUpdate)
             {
-                tracingService.Trace("Pre-image '" + PreImageAlias + "'not found" +
-                    "Ensure Pre-Image is registered on this Delete step.");
+                Entity target = (Entity)context.InputParameters["Target"];
+                if (!target.Contains("statecode"))
+                {
+                    tracingService.Trace("Exiting: Update does not contain statecode.");
                     return;
+                }
             }
 
-            Entity preImage = context.PreEntityImages[PreImageAlias];
+            //--3. Read OCC and Purchase Request from the allocation
+            EntityReference occRef = null;
+            EntityReference parentRef = null;
+            Guid deletingId = Guid.Empty;
 
-            //Read the OCC lookup from the allocation being deleted
-            var occRef = preImage.GetAttributeValue<EntityReference>(AllocationOccField);
+            if (isDelete)
+            {
+                if (!context.PreEntityImages.Contains(PreImageAlias))
+                {
+                    tracingService.Trace("Pre-image '" + PreImageAlias + "' not found. " +
+                        "Ensure Pre-Image is registered on this Delete step.");
+                    return;
+                }
 
-            if (occRef == null) 
+                Entity preImage = context.PreEntityImages[PreImageAlias];
+                occRef = preImage.GetAttributeValue<EntityReference>(AllocationOccField);
+                parentRef = preImage.GetAttributeValue<EntityReference>(AllocationParentField);
+                deletingId = context.PrimaryEntityId;
+            }
+            else
+            {
+                if (!context.PostEntityImages.Contains(PostImageAlias))
+                {
+                    tracingService.Trace("Post-image '" + PostImageAlias + "' not found. " +
+                        "Ensure Post-Image is registered on this Update step.");
+                    return;
+                }
+
+                Entity postImage = context.PostEntityImages[PostImageAlias];
+                occRef = postImage.GetAttributeValue<EntityReference>(AllocationOccField);
+                parentRef = postImage.GetAttributeValue<EntityReference>(AllocationParentField);
+            }
+
+            if (occRef == null)
             {
                 tracingService.Trace(
-                    "No OCC value on deleted allocation." +
-                    "Nothing to recalculate.  Exiting.");
+                    "No OCC value on allocation. " +
+                    "Nothing to recalculate. Exiting.");
                 return;
             }
 
-            //Read the parent Purchase Request lookup
-            var parentRef = preImage.GetAttributeValue<EntityReference>(
-                AllocationParentField);
-            if (parentRef == null) 
+            if (parentRef == null)
             {
-                tracingService.Trace("No parent Purchase request on deleted allocation." +
+                tracingService.Trace("No parent Purchase Request on allocation. " +
                     "Exiting.");
                 return;
             }
 
             Guid occId = occRef.Id;
             Guid parentId = parentRef.Id;
-            Guid deletingId = context.PrimaryEntityId;
 
             tracingService.Trace(
-                "Deleted allocation OCC ID = {0}, Parent ID = {1} " +
-                "Deleting Allocation ID = {2}",
-                occId, parentId, deletingId);
+                "Allocation {0}: OCC ID = {1}, Parent ID = {2}",
+                isDelete ? "Delete" : "State Change",
+                occId, parentId);
 
             try
             {
-                //--4. Query remaining allocations for the same OCC and parent
-                //EXCLUDE the record being - deleted - because it still exists at
-                //Pre-Operatioon stage so we must filter it out manually
+                //--4. Query remaining active allocations for the same OCC and parent.
+                //  Delete:  record still exists at Pre-Operation — exclude it manually.
+                //  Update:  record's statecode is already committed — statecode filter
+                //           naturally excludes a deactivated record and includes a
+                //           reactivated one.
 
                 QueryExpression remainingQuery = new QueryExpression(AllocationEntity)
                 {
@@ -144,8 +186,14 @@ namespace ProcurementPlugins
                     occId);
 
                 remainingQuery.Criteria.AddCondition(
-                    "biteam_tpcallocationsid",
-                    ConditionOperator.NotEqual, deletingId);
+                    "statecode", ConditionOperator.Equal, 0);
+
+                if (isDelete)
+                {
+                    remainingQuery.Criteria.AddCondition(
+                        "biteam_tpcallocationsid",
+                        ConditionOperator.NotEqual, deletingId);
+                }
 
                 EntityCollection remaining = 
                     orgService.RetrieveMultiple(remainingQuery);
