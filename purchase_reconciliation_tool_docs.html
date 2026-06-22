@@ -389,7 +389,7 @@
   <div class="nav-header">
     <div class="nav-logo">Purchase Reconciliation Tool</div>
     <div class="nav-title">App Documentation</div>
-    <div class="nav-version">v1.1 · ProcurementPlugins</div>
+    <div class="nav-version">v1.2 · ProcurementPlugins</div>
   </div>
   <ul>
     <li class="nav-section-label">Overview</li>
@@ -481,8 +481,8 @@ Dataverse
   │    ├─ Plugin: AddPcaPrefixPlugin          <span class="comment">(Pre-Create, stage 20)</span>
   │    └─ JS:     pcaRegExPrompt.js           <span class="comment">(onLoad, onSave, onChange)</span>
   │
-  ├─ biteam_tpcallocations         <span class="comment">(TPC Allocation)</span>  
-  │    ├─ Plugin: OccSummaryOnAllocationDeletePlugin  <span class="comment">(Pre-Delete, stage 20)</span>
+  ├─ biteam_tpcallocations         <span class="comment">(TPC Allocation)</span>
+  │    ├─ Plugin: OccSummaryOnAllocationDeletePlugin  <span class="comment">(Pre-Delete stage 20 · Post-Update stage 40)</span>
   │    └─ JS:     tpcAllocation_Prepop.js     <span class="comment">(Quick Create onLoad)</span>
   │
   ├─ cr6c5_usbanktransactions      <span class="comment">(US Bank Transactions)</span>
@@ -673,16 +673,21 @@ Dataverse
       Maintains the <code>biteam_occsummary</code> child entity whenever a US Bank transaction is
       created, updated, or deleted. Fires on all three messages at Post-Operation stage 40.
       On Update, filtered attributes limit execution to changes in transaction amount,
-      associated OCC, or associated purchase request — preventing unnecessary firing.
+      associated OCC, associated purchase request, associated TPC allocation, or record
+      state — preventing unnecessary firing. When the TPC Allocation lookup changes, the
+      plugin re-resolves the OCC from the new allocation and recalculates the old OCC
+      summary so its total no longer includes the moved transaction's amount.
     </p>
 
     <h4>Execution Flow</h4>
     <div class="flow-diagram">
-      <div class="flow-step-box"><span class="step-num">STEP 1</span>Resolve OCC from transaction or TPC Allocation</div>
+      <div class="flow-step-box"><span class="step-num">STEP 1</span>Resolve OCC from transaction or TPC Allocation (re-resolve if allocation changed)</div>
       <div class="flow-arrow">→</div>
       <div class="flow-step-box"><span class="step-num">STEP 2</span>Write OCC back to transaction record</div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step-box"><span class="step-num">STEP 3</span>Re-aggregate all active transaction amounts for PR + OCC</div>
+      <div class="flow-step-box"><span class="step-num">STEP 2b</span>If OCC changed: recalculate old OCC Summary total</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step-box"><span class="step-num">STEP 3</span>Re-aggregate all active transaction amounts for PR + new OCC</div>
       <div class="flow-arrow">→</div>
       <div class="flow-step-box"><span class="step-num">STEP 4</span>Upsert OCC Summary row (update or create)</div>
     </div>
@@ -696,7 +701,7 @@ Dataverse
           <tr><td>Entity</td><td><code>cr6c5_usbanktransactions</code></td></tr>
           <tr><td>Stage</td><td>Post-Operation (40)</td></tr>
           <tr><td>Execution Mode</td><td>Synchronous</td></tr>
-          <tr><td>Filtering Attributes (Update only)</td><td><code>cr6c5_transactionamount</code>, <code>biteam_associatedocc</code>, <code>biteam_purchaserequest</code></td></tr>
+          <tr><td>Filtering Attributes (Update only)</td><td><code>cr6c5_transactionamount</code>, <code>biteam_associatedocc</code>, <code>biteam_purchaserequest</code>, <code>biteam_associatedtpcallocation</code>, <code>statecode</code></td></tr>
           <tr><td>Images Required</td><td>PostImage (all columns) on Create/Update · PreImage (all columns) on Delete</td></tr>
         </tbody>
       </table>
@@ -721,24 +726,34 @@ Dataverse
     <p>
       <span class="badge plugin">Plugin</span>
       <span class="badge pre">Pre-Operation</span>
+      <span class="badge post">Post-Operation</span>
       <span class="badge entity">biteam_tpcallocations</span>
     </p>
     <p>
       Recalculates or removes the <code>biteam_occsummary</code> record when a TPC Allocation is
-      hard-deleted. Runs at Pre-Operation (stage 20) so the record still physically exists in Dataverse
-      — which allows remaining allocations to be queried. The deleting record is explicitly excluded
-      from the remaining-allocations query using a <code>NotEqual</code> condition on its ID.
+      hard-deleted <strong>or deactivated/reactivated</strong>. Registered on two steps:
+    </p>
+    <p>
+      <strong>Delete step</strong> runs at Pre-Operation (stage 20) so the record still physically
+      exists in Dataverse — the deleting record is explicitly excluded from the
+      remaining-allocations query using a <code>NotEqual</code> condition on its ID.
+    </p>
+    <p>
+      <strong>Update step</strong> runs at Post-Operation (stage 40), filtered on
+      <code>statecode</code> only. When an allocation is deactivated, the <code>statecode = 0</code>
+      (active) filter on the remaining-allocations query naturally excludes it; when reactivated,
+      it is naturally included. No manual ID exclusion is needed for this path.
     </p>
 
     <h4>Execution Flow</h4>
     <div class="flow-diagram">
-      <div class="flow-step-box"><span class="step-num">STEP 1</span>Read OCC and parent PR from PreImage</div>
+      <div class="flow-step-box"><span class="step-num">STEP 1</span>Read OCC and parent PR from PreImage (Delete) or PostImage (Update)</div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step-box"><span class="step-num">STEP 2</span>Query remaining allocations for same OCC (excluding deleting record)</div>
+      <div class="flow-step-box"><span class="step-num">STEP 2</span>Query remaining active allocations for same OCC (exclude deleting record on Delete only)</div>
       <div class="flow-arrow">→</div>
       <div class="flow-step-box"><span class="step-num">STEP 3</span>Find existing OCC Summary record</div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step-box"><span class="step-num">STEP 4</span>Delete summary if no allocations remain · Recalculate and update if allocations remain</div>
+      <div class="flow-step-box"><span class="step-num">STEP 4</span>Delete summary if no active allocations remain · Recalculate and update if allocations remain</div>
     </div>
 
     <div class="table-wrap">
@@ -746,12 +761,16 @@ Dataverse
         <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Class</td><td><code>OccSummaryOnAllocationDeletePlugin</code></td></tr>
-          <tr><td>Message</td><td>Delete</td></tr>
+          <tr><td>Message (Step 1)</td><td>Delete</td></tr>
+          <tr><td>Stage (Step 1)</td><td>Pre-Operation (20)</td></tr>
+          <tr><td>Images (Step 1)</td><td>PreImage (all columns) — mandatory</td></tr>
+          <tr><td>Message (Step 2)</td><td>Update</td></tr>
+          <tr><td>Stage (Step 2)</td><td>Post-Operation (40)</td></tr>
+          <tr><td>Filtering Attributes (Step 2)</td><td><code>statecode</code></td></tr>
+          <tr><td>Images (Step 2)</td><td>PostImage (all columns) — mandatory</td></tr>
           <tr><td>Entity</td><td><code>biteam_tpcallocations</code></td></tr>
-          <tr><td>Stage</td><td>Pre-Operation (20)</td></tr>
           <tr><td>Execution Mode</td><td>Synchronous</td></tr>
           <tr><td>Execution Order</td><td>1</td></tr>
-          <tr><td>Images Required</td><td>PreImage (all columns) — mandatory</td></tr>
         </tbody>
       </table>
     </div>
@@ -761,7 +780,9 @@ Dataverse
       The PreImage on a Delete step is the <em>only</em> reliable source of data for the record
       being deleted. Running at Pre-Operation (stage 20) also means the record still exists in
       Dataverse during execution, which allows the remaining-allocations query to run correctly
-      with the explicit <code>NotEqual</code> exclusion of the deleting record's ID.
+      with the explicit <code>NotEqual</code> exclusion of the deleting record's ID. The Update
+      step uses Post-Operation (stage 40) because the <code>statecode</code> change is already
+      committed, allowing the active-only filter to work without manual exclusion.
     </div>
 
     <div class="callout note">
@@ -931,6 +952,7 @@ Dataverse
       <li>If registering for the first time — click <strong>Register New Assembly</strong>.</li>
       <li>Register or verify Steps for each plugin (see registration tables above).</li>
       <li>Confirm PreImage is registered on the Delete step of <code>OccSummaryOnAllocationDeletePlugin</code>.</li>
+      <li>Confirm PostImage is registered on the Update step of <code>OccSummaryOnAllocationDeletePlugin</code> with <code>statecode</code> as the only filtering attribute.</li>
       <li>Confirm PostImage is registered on Create and Update steps of <code>SyncOccSummaryPlugin</code>.</li>
       <li>Test end-to-end: create a Purchase Request, confirm <code>TPC-</code> prefix and linked PCA record appear.</li>
     </ol>
@@ -974,6 +996,11 @@ Dataverse
             <td>Notification cleanup logic moved to <code>onLoad</code> instead</td>
           </tr>
           <tr>
+            <td>Guard logic bug in OccSummaryOnAllocationDeletePlugin</td>
+            <td>Message guard uses <code>!isDelete || !isUpdate</code> — since a message cannot be both Delete and Update simultaneously, this condition is <strong>always true</strong>, causing the plugin to exit on every execution</td>
+            <td>Revert to <code>!isDelete &amp;&amp; !isUpdate</code> so the guard only exits when the message is <em>neither</em> Delete nor Update</td>
+          </tr>
+          <tr>
             <td>Unused import in OccSummaryOnAllocationDeletePlugin</td>
             <td><code>using System.Web.UI.WebControls</code> has no references</td>
             <td>Safe to remove in a future cleanup — no functional impact</td>
@@ -1014,6 +1041,20 @@ Dataverse
     </div>
 
     <div class="changelog-entry">
+      <div class="changelog-date">2025 Q3</div>
+      <div class="changelog-desc">
+        <strong>v1.2 — TPC Allocation Change Handling &amp; Deactivation Support</strong><br>
+        <code>SyncOccSummaryPlugin</code>: added <code>biteam_associatedtpcallocation</code> and
+        <code>statecode</code> as filtering attributes; re-resolves OCC when TPC Allocation changes;
+        recalculates old OCC Summary when a transaction moves between OCCs ·
+        <code>OccSummaryOnAllocationDeletePlugin</code>: added Update step (Post-Operation, stage 40)
+        to handle deactivation/reactivation of TPC Allocations; remaining-allocations query now
+        filters by <code>statecode = 0</code> (active only) ·
+        Target framework downgraded from .NET 4.7.1 to .NET 4.6.2.
+      </div>
+    </div>
+
+    <div class="changelog-entry">
       <div class="changelog-date">—</div>
       <div class="changelog-desc"><em>Future entries go here.</em></div>
     </div>
@@ -1021,7 +1062,7 @@ Dataverse
 
   <footer>
     <span>Purchase Reconciliation Tool · Internal Use Only · AJV-C Procurement</span>
-    <span>ProcurementPlugins v1.1 · biteam_ publisher</span>
+    <span>ProcurementPlugins v1.2 · biteam_ publisher</span>
   </footer>
 
 </main>
