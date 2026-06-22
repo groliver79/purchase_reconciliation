@@ -996,11 +996,6 @@ Dataverse
             <td>Notification cleanup logic moved to <code>onLoad</code> instead</td>
           </tr>
           <tr>
-            <td>Guard logic bug in OccSummaryOnAllocationDeletePlugin</td>
-            <td>Message guard uses <code>!isDelete || !isUpdate</code> — since a message cannot be both Delete and Update simultaneously, this condition is <strong>always true</strong>, causing the plugin to exit on every execution</td>
-            <td>Revert to <code>!isDelete &amp;&amp; !isUpdate</code> so the guard only exits when the message is <em>neither</em> Delete nor Update</td>
-          </tr>
-          <tr>
             <td>Unused import in OccSummaryOnAllocationDeletePlugin</td>
             <td><code>using System.Web.UI.WebControls</code> has no references</td>
             <td>Safe to remove in a future cleanup — no functional impact</td>
