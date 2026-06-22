@@ -76,7 +76,7 @@ namespace ProcurementPlugins
             bool isDelete = context.MessageName.Equals(DeleteMessage, StringComparison.OrdinalIgnoreCase);
             bool isUpdate = context.MessageName.Equals(UpdateMessage, StringComparison.OrdinalIgnoreCase);
 
-            if (!isDelete || !isUpdate)
+            if (!isDelete && !isUpdate)
             {
                 tracingService.Trace("Exiting: message is not Delete or Update.");
                 return;
