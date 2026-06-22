@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProcurementPlugins</RootNamespace>
     <AssemblyName>ProcurementPlugins</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -108,7 +108,6 @@
     <Compile Include="AddTpcPrefixPlugin.cs" />
     <Compile Include="OccSummaryOnAllocationDeletePlugin.cs" />
     <Compile Include="SyncOccSummaryPlugin.cs" />
-    <Compile Include="CreatePcaRecordPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
